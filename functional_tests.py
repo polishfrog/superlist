@@ -21,7 +21,7 @@ class NewVisionTest(unittest.TestCase):
 
         self.assertIn('Listy', self.browser.title)
         header_text = self.browser.find_element(By.TAG_NAME, 'h1').text
-        self.assertIn('Listy', header_text)
+        self.assertIn('lista', header_text)
 
         inputbox = self.browser.find_element(By.ID, 'id_new_item')
         self.assertEqual(
@@ -36,7 +36,8 @@ class NewVisionTest(unittest.TestCase):
         table = self.browser.find_element(By.ID, 'id_list_table')
         rows = table.find_elements(By.TAG_NAME, 'tr')
         self.assertTrue(
-            any(row.text == '1: Kupić pawie pióra' for row in rows)
+            any(row.text == '1: Kupić pawie pióra' for row in rows),
+            "Nowy element nie znajduje się w tabeli."
         )
 
         self.fail('Zakończenie testu')
