@@ -1,3 +1,5 @@
+import time
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -30,17 +32,13 @@ class NewVisionTest(unittest.TestCase):
         )
 
         inputbox.send_keys('Kupić pawie pióra')
-
         inputbox.send_keys(Keys.ENTER)
 
-        table = self.browser.find_element(By.ID, 'id_list_table')
-        rows = table.find_elements(By.TAG_NAME, 'tr')
-        self.assertTrue(
-            any(row.text == '1: Kupić pawie pióra' for row in rows),
-            "Nowy element nie znajduje się w tabeli."
-        )
 
-        self.fail('Zakończenie testu')
+    def check_for_row_in_list_table(self, row_text):
+        table = self.browser.find_element(By.TAG_NAME, 'table')
+        rows = table.find_elements(By.TAG_NAME, 'tr')
+        self.assertIn(row_text, [row.text for row in rows])
 
 
 
