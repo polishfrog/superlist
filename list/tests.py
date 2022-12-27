@@ -1,3 +1,5 @@
+import re
+
 from django.urls import resolve
 from django.test import TestCase
 from django.http import HttpRequest
@@ -13,24 +15,41 @@ class HomePageTest(TestCase):
         found = resolve('/')
         self.assertEqual(found.func, home_page)
 
-    def test_home_page_return_correct_html(self):
-        request = HttpRequest()
-        response = home_page(request)
-        expected_html = render_to_string('home.html')
-        self.assertEquals(response.content.decode(), expected_html)
-
     def test_home_page_can_save_a_POST_request(self):
         request = HttpRequest()
         request.method = 'POST'
         request.POST['item_text'] = 'Nowy element listy'
 
         response = home_page(request)
-        self.assertIn('Nowy element listy', response.content.decode())
-        expected_html = render_to_string(
-            'home.html',
-            {'new_item_text': 'Nowy element listy'}
-        )
-        self.assertEqual(response.content.decode(), expected_html)
+
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, 'Nowy element listy')
+
+    def test_home_page_can_save_after_POST(self):
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['item_text'] = 'Nowy element listy'
+
+        response = home_page(request)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+    def test_home_page_only_saves_items_when_necessary(self):
+        request = HttpRequest()
+        home_page(request)
+        self.assertEqual(Item.objects.count(), 0)
+
+    def test_home_page_displays_all_list_items(self):
+        Item.objects.create(text='item1')
+        Item.objects.create(text='item2')
+
+        request = HttpRequest()
+        response = home_page(request)
+
+        self.assertIn('1: item1', response.content.decode())
+        self.assertIn('2: item2', response.content.decode())
 
 
 class ItemModelTest(TestCase):

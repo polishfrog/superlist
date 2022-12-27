@@ -34,12 +34,10 @@ class NewVisionTest(unittest.TestCase):
         inputbox.send_keys('Kupić pawie pióra')
         inputbox.send_keys(Keys.ENTER)
 
-
     def check_for_row_in_list_table(self, row_text):
         table = self.browser.find_element(By.TAG_NAME, 'table')
         rows = table.find_elements(By.TAG_NAME, 'tr')
         self.assertIn(row_text, [row.text for row in rows])
-
 
 
 if __name__ == '__main__':
