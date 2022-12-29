@@ -34,22 +34,12 @@ class HomePageTest(TestCase):
         response = home_page(request)
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/lists/the-only-list-in-the-world/')
+        self.assertEqual(response['location'], 'lists/one')
 
     def test_home_page_only_saves_items_when_necessary(self):
         request = HttpRequest()
         home_page(request)
         self.assertEqual(Item.objects.count(), 0)
-
-    def test_home_page_displays_all_list_items(self):
-        Item.objects.create(text='item1')
-        Item.objects.create(text='item2')
-
-        request = HttpRequest()
-        response = home_page(request)
-
-        self.assertIn('1: item1', response.content.decode())
-        self.assertIn('2: item2', response.content.decode())
 
 
 class ItemModelTest(TestCase):
@@ -70,3 +60,18 @@ class ItemModelTest(TestCase):
         self.assertEqual(first_saved_item.text, 'Absolutnie pierwszy element listy')
         self.assertEqual(secound_saved_item.text, 'Drugi element')
 
+
+class ListViewTest(TestCase):
+
+    def test_uses_list_template(self):
+        response = self.client.get('lists/one')
+        self.assertTemplateUsed(response, 'list.html')
+
+    def test_displays_all_items(self):
+        Item.objects.create(text='item1')
+        Item.objects.create(text='item2')
+
+        response = self.client.get('lists/one')
+
+        #self.assertContains(response, '1: item1')
+        #self.assertContains(response, 'item2')

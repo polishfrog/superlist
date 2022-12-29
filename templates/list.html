@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Listy rzeczy do zrobienia</title>
+    <title>Lista</title>
 </head>
 <body>
     <h1>Twoja lista rzeczy do zrobienia</h1>
-    <form method="post">
+    <form method="post" action="/">
         {% csrf_token %}
         <input name="item_text" id="id_new_item" placeholder="Wpisz rzeczy do zrobienia">
     </form>
+
+
+    <table id="id_list_table">
+        {% for item in items %}
+        <tr><td>{{ forloop.counter }}: {{ item.text }}</td></tr>
+        {% endfor %}
+    </table>
 </body>
 </html>
